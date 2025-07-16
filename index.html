@@ -226,7 +226,7 @@
         const formData = new FormData();
         formData.append('image', imageInput.files[0]);
         try {
-            const res = await fetch('http://localhost:7860/api/remove-bg', {
+            const res = await fetch('https://ravikumar619--abackgroundremover.hf.space/remove', {
                 method: 'POST',
                 body: formData
             });
