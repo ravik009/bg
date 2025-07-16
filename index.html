@@ -215,39 +215,50 @@
     }
 
     // Remove background
-    async function removeBg() {
-        if (!imageInput.files.length) {
-            showToast('Please select an image!', true);
-            return;
-        }
-        removeBtn.disabled = true;
-        loader.style.display = 'block';
-        previewImg.classList.remove('cutout');
-        const formData = new FormData();
-        formData.append('image', imageInput.files[0]);
-        try {
-            const res = await fetch("https://ravikumar619--abackgroundremover.hf.space/remove")', {
-                method: 'POST',
-                body: formData
-            });
-            if (res.ok) {
-                const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
-                previewImg.src = url;
-                previewImg.style.display = 'block';
-                previewImg.classList.add('cutout');
-                showToast('Background removed! You can right-click to save the cutout.');
-            } else {
-                const err = await res.json();
-                showToast('Error: ' + (err.error || 'Unknown error'), true);
-            }
-        } catch (e) {
-            showToast('Network error: ' + e.message, true);
-        } finally {
-            removeBtn.disabled = false;
-            loader.style.display = 'none';
-        }
+   async function removeBg() {
+    if (!imageInput.files.length) {
+        showToast('Please select an image!', true);
+        return;
     }
+
+    removeBtn.disabled = true;
+    loader.style.display = 'block';
+    previewImg.classList.remove('cutout');
+
+    const formData = new FormData();
+    formData.append('image', imageInput.files[0]);
+
+    try {
+        const res = await fetch("https://ravikumar619--abackgroundremover.hf.space/remove", {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res.ok) {
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            previewImg.src = url;
+            previewImg.style.display = 'block';
+            previewImg.classList.add('cutout');
+            showToast('Background removed! You can right-click to save the cutout.');
+        } else {
+            let errMsg = 'Unknown error';
+            try {
+                const errJson = await res.json();
+                errMsg = errJson.error || errMsg;
+            } catch (e) {
+                const errText = await res.text();
+                errMsg = errText.slice(0, 100);
+            }
+            showToast('Error: ' + errMsg, true);
+        }
+    } catch (e) {
+        showToast('Network error: ' + e.message, true);
+    } finally {
+        removeBtn.disabled = false;
+        loader.style.display = 'none';
+    }
+}
     </script>
 </body>
 </html>
