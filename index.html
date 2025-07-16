@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI Background Remover</title>
+</head>
 <body>
-  <h2>Test Background Remover</h2>
+  <h2>AI Background Remover</h2>
   <input type="file" id="imgInput">
-  <button onclick="removeBg()">Upload</button>
+  <button onclick="removeBg()">Remove Background</button>
   <br><img id="output" style="margin-top:10px; max-width: 300px;">
   <p id="status"></p>
 
-<script>
-const API_URL = "https://ravikumar619--abackgroundremover.hf.space";
+  <script>
+    const API_URL = "/api/remove-bg";
 
-async function removeBg() {
-  const input = document.getElementById("imgInput");
-  const status = document.getElementById("status");
-  if (!input.files.length) {
-    alert("Choose file first"); return;
-  }
-  status.innerText = "Uploading...";
-  const formData = new FormData();
-  formData.append("image", input.files[0]);
-  try {
-    const res = await fetch(API_URL + "/api/remove-bg", {
-      method: "POST",
-      body: formData
-    });
-    if (res.ok) {
-      const blob = await res.blob();
-      document.getElementById("output").src = URL.createObjectURL(blob);
-      status.innerText = "Done!";
-    } else {
-      const err = await res.text();
-      status.innerText = "Error: " + err;
+    async function removeBg() {
+      const input = document.getElementById("imgInput");
+      const status = document.getElementById("status");
+      if (!input.files.length) {
+        alert("Choose file first"); return;
+      }
+      status.innerText = "Uploading...";
+      const formData = new FormData();
+      formData.append("image", input.files[0]);
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: formData
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          document.getElementById("output").src = URL.createObjectURL(blob);
+          status.innerText = "Done!";
+        } else {
+          const err = await res.text();
+          status.innerText = "Error: " + err;
+        }
+      } catch (e) {
+        status.innerText = "Network error: " + e.message;
+      }
     }
-  } catch (e) {
-    status.innerText = "Network error: " + e.message;
-  }
-}
-</script>
+  </script>
 </body>
 </html>
